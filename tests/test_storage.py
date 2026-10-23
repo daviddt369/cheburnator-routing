@@ -116,7 +116,7 @@ class StorageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_payload(self.output)
 
-    def check_draft_publication(self, corrupt=False):
+    def check_draft_publication(self, corrupt=False, lost_publish_response=False):
         dist = self.output / 'dist'
         dist.mkdir()
         (dist / 'example.lst').write_bytes(b'example.com\n')
@@ -133,13 +133,21 @@ class StorageTests(unittest.TestCase):
                 return [{'name': n, 'digest': 'sha256:' + ('bad' if corrupt else h)}
                         for n, h in digests.items()]
             if endpoint.endswith('/42'):
+                if lost_publish_response:
+                    if kwargs.get('method') == 'PATCH':
+                        raise OSError('Response lost after successful server-side publication')
+                    return {**draft, 'draft': False}
                 return draft
             raise AssertionError('Draft lookup by tag is unavailable: ' + endpoint)
         with patch.dict(os.environ, {'GITHUB_REPOSITORY': 'owner/project', 'GITHUB_RUN_ID': '123'}), \
                 patch('storage.clean_main', return_value='code'), patch('storage.publish_cache'), \
                 patch('storage.command', return_value=''), patch('storage.gh_json', side_effect=api), \
                 patch('storage.delete_release') as delete, patch('storage.time.sleep'):
-            if corrupt:
+            if lost_publish_response:
+                with self.assertRaises(OSError):
+                    publish(self.root, self.output, self.policy)
+                delete.assert_not_called()
+            elif corrupt:
                 with self.assertRaises(ValueError):
                     publish(self.root, self.output, self.policy)
                 delete.assert_called_once_with(self.root, draft)
@@ -154,6 +162,9 @@ class StorageTests(unittest.TestCase):
 
     def test_bad_uploaded_digest_deletes_only_draft_and_keeps_latest(self):
         self.check_draft_publication(corrupt=True)
+
+    def test_lost_publish_response_cannot_delete_published_release(self):
+        self.check_draft_publication(lost_publish_response=True)
 
 
 class RetentionTests(unittest.TestCase):
