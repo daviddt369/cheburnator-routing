@@ -1,0 +1,2 @@
+# Remove matching imported domain rules from the aggregate proxy list.
+# This does not change service/category lists or broad parent rules.

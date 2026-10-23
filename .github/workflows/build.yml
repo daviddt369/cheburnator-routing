@@ -1,0 +1,81 @@
+name: Build and publish routing lists
+
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'config/**'
+      - 'overrides/**'
+      - 'tests/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'config/**'
+      - 'overrides/**'
+      - 'tests/**'
+      - '.github/workflows/build.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: routing-catalog-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+
+  publish:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Restore compressed source snapshots
+        run: python scripts/storage.py restore
+      - name: Install verified compilers
+        run: python scripts/install_tools.py
+      - name: Build all formats and verify round trips
+        run: python scripts/build.py --output .cache/output --sing-box "$PWD/tools/sing-box" --mihomo "$PWD/tools/mihomo" --xray "$PWD/tools/xray"
+      - name: Publish verified release and replace cache snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/storage.py publish --output .cache/output
+      - name: Enforce release retention
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/storage.py cleanup
+      - name: Build summary
+        if: always()
+        run: |
+          if [ -f .cache/output/reports/manifest.json ]; then
+            python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          m = json.load(open('.cache/output/reports/manifest.json'))
+          print('| Source | Status | Entries |')
+          print('|---|---|---:|')
+          for s in m['sources']:
+              print(f"| {s['id']} | {s['status']} | {s['entries']} |")
+          PY
+          fi

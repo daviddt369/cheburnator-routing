@@ -1,0 +1,2 @@
+# Explicit foreign exit exceptions, one rule per line.
+# Plain domain = suffix; full:host.example = exact; regexp:... = regex.

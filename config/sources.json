@@ -1,0 +1,731 @@
+{
+  "minimum_sources": {
+    "ru-domains": 1,
+    "ru-ips": 1,
+    "proxy-domains": 2,
+    "proxy-ips": 1
+  },
+  "sources": [
+    {
+      "id": "alpaca-ru-domains",
+      "url": "https://redirect.alpaca-community.com/geo/geosite.dat",
+      "groups": [
+        "ru-domains"
+      ],
+      "format": "geosite",
+      "family": "domains",
+      "required": false,
+      "min_entries": 500,
+      "max_cache_days": 14,
+      "ru_tags": true,
+      "provider": "alpaca"
+    },
+    {
+      "id": "alpaca-ru-ips",
+      "url": "https://redirect.alpaca-community.com/geo/geoip.dat",
+      "groups": [
+        "ru-ips"
+      ],
+      "format": "geoip",
+      "family": "ips",
+      "required": false,
+      "min_entries": 1000,
+      "max_cache_days": 14,
+      "tags": [
+        "RU"
+      ],
+      "provider": "alpaca"
+    },
+    {
+      "id": "itdog-ru-outside",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Russia/outside-raw.lst",
+      "groups": [
+        "ru-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": false,
+      "min_entries": 5,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-inside",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Russia/inside-raw.lst",
+      "groups": [
+        "proxy-domains",
+        "proxy-curated-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 500,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "refilter-domains",
+      "url": "https://raw.githubusercontent.com/1andrevich/Re-filter-lists/main/domains_all.lst",
+      "groups": [
+        "proxy-domains",
+        "proxy-ips",
+        "proxy-curated-domains"
+      ],
+      "format": "text",
+      "family": "mixed",
+      "required": false,
+      "min_entries": 10000,
+      "max_cache_days": 14,
+      "provider": "refilter"
+    },
+    {
+      "id": "refilter-ips",
+      "url": "https://raw.githubusercontent.com/1andrevich/Re-filter-lists/main/ipsum.lst",
+      "groups": [
+        "proxy-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1000,
+      "max_cache_days": 14,
+      "provider": "refilter"
+    },
+    {
+      "id": "antifilter-rkn",
+      "url": "https://antifilter.download/list/domains.lst",
+      "groups": [
+        "proxy-domains",
+        "proxy-ips"
+      ],
+      "format": "text",
+      "family": "mixed",
+      "required": false,
+      "min_entries": 10000,
+      "max_cache_days": 14,
+      "provider": "antifilter",
+      "max_invalid_lines": 100
+    },
+    {
+      "id": "antifilter-community",
+      "url": "https://community.antifilter.download/list/domains.lst",
+      "groups": [
+        "proxy-domains",
+        "proxy-ips",
+        "proxy-curated-domains"
+      ],
+      "format": "text",
+      "family": "mixed",
+      "required": false,
+      "min_entries": 100,
+      "max_cache_days": 14,
+      "provider": "antifilter"
+    },
+    {
+      "id": "itdog-category-anime",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Categories/anime.lst",
+      "groups": [
+        "category-anime"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-category-block",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Categories/block.lst",
+      "groups": [
+        "category-block"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-category-geoblock",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Categories/geoblock.lst",
+      "groups": [
+        "category-geoblock"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-category-news",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Categories/news.lst",
+      "groups": [
+        "category-news"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-category-porn",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Categories/porn.lst",
+      "groups": [
+        "category-porn"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-category-hodca",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Categories/hodca.lst",
+      "groups": [
+        "category-hodca"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-cloudflare",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/cloudflare.lst",
+      "groups": [
+        "service-cloudflare-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-cloudfront",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/cloudfront.lst",
+      "groups": [
+        "service-cloudfront-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-digitalocean",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/digitalocean.lst",
+      "groups": [
+        "service-digitalocean-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-discord",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/discord.lst",
+      "groups": [
+        "service-discord-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-google_ai",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/google_ai.lst",
+      "groups": [
+        "service-google-ai-domains",
+        "proxy-domains",
+        "proxy-curated-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-google_meet",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/google_meet.lst",
+      "groups": [
+        "service-google-meet-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-google_play",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/google_play.lst",
+      "groups": [
+        "service-google-play-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-hdrezka",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/hdrezka.lst",
+      "groups": [
+        "service-hdrezka-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-hetzner",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/hetzner.lst",
+      "groups": [
+        "service-hetzner-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-meta",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/meta.lst",
+      "groups": [
+        "service-meta-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-ovh",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/ovh.lst",
+      "groups": [
+        "service-ovh-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-roblox",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/roblox.lst",
+      "groups": [
+        "service-roblox-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-telegram",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/telegram.lst",
+      "groups": [
+        "service-telegram-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-tiktok",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/tiktok.lst",
+      "groups": [
+        "service-tiktok-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-twitter",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/twitter.lst",
+      "groups": [
+        "service-twitter-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-service-youtube",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/youtube.lst",
+      "groups": [
+        "service-youtube-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-cloudflare",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/cloudflare.lst",
+      "groups": [
+        "service-cloudflare-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-cloudflare",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/cloudflare.lst",
+      "groups": [
+        "service-cloudflare-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-cloudfront",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/cloudfront.lst",
+      "groups": [
+        "service-cloudfront-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-cloudfront",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/cloudfront.lst",
+      "groups": [
+        "service-cloudfront-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-digitalocean",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/digitalocean.lst",
+      "groups": [
+        "service-digitalocean-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-digitalocean",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/digitalocean.lst",
+      "groups": [
+        "service-digitalocean-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-discord",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/discord.lst",
+      "groups": [
+        "service-discord-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-discord",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/discord.lst",
+      "groups": [
+        "service-discord-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-google_meet",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/google_meet.lst",
+      "groups": [
+        "service-google-meet-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-google_meet",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/google_meet.lst",
+      "groups": [
+        "service-google-meet-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-hetzner",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/hetzner.lst",
+      "groups": [
+        "service-hetzner-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-hetzner",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/hetzner.lst",
+      "groups": [
+        "service-hetzner-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-meta",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/meta.lst",
+      "groups": [
+        "service-meta-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-meta",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/meta.lst",
+      "groups": [
+        "service-meta-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-ovh",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/ovh.lst",
+      "groups": [
+        "service-ovh-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-ovh",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/ovh.lst",
+      "groups": [
+        "service-ovh-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-roblox",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/roblox.lst",
+      "groups": [
+        "service-roblox-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-telegram",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/telegram.lst",
+      "groups": [
+        "service-telegram-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-telegram",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/telegram.lst",
+      "groups": [
+        "service-telegram-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets-twitter",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/twitter.lst",
+      "groups": [
+        "service-twitter-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "itdog-subnets6-twitter",
+      "url": "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv6/twitter.lst",
+      "groups": [
+        "service-twitter-ips"
+      ],
+      "format": "text",
+      "family": "ips",
+      "required": true,
+      "min_entries": 1,
+      "max_cache_days": 14,
+      "provider": "itdog"
+    },
+    {
+      "id": "owner-ru-domains",
+      "url": "https://raw.githubusercontent.com/daviddt369/ru-not-ru-domain/main/rule-set/ru-geosite.json",
+      "groups": [
+        "ru-domains"
+      ],
+      "format": "json",
+      "family": "domains",
+      "required": false,
+      "min_entries": 500,
+      "max_cache_days": 14,
+      "provider": "owner",
+      "fallback_for": "alpaca-ru-domains"
+    },
+    {
+      "id": "owner-ru-ips",
+      "url": "https://raw.githubusercontent.com/daviddt369/ru-not-ru-domain/main/rule-set/ru-geoip.json",
+      "groups": [
+        "ru-ips"
+      ],
+      "format": "json",
+      "family": "ips",
+      "required": false,
+      "min_entries": 1000,
+      "max_cache_days": 14,
+      "provider": "owner",
+      "fallback_for": "alpaca-ru-ips"
+    },
+    {
+      "id": "owner-gaming",
+      "url": "https://raw.githubusercontent.com/daviddt369/ru-not-ru-domain/main/gaming-direct.txt",
+      "groups": [
+        "service-gaming-domains"
+      ],
+      "format": "text",
+      "family": "domains",
+      "required": false,
+      "min_entries": 30,
+      "max_cache_days": 14,
+      "provider": "owner"
+    }
+  ],
+  "minimum_providers": {
+    "proxy-domains": 2,
+    "proxy-curated-domains": 2
+  }
+}

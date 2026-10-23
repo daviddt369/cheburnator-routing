@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.cache/
+dist/
+.build-*/
+tools/
+/source-cache/
+/lists/
+/rule-set/
+/reports/
