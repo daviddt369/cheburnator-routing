@@ -27,9 +27,9 @@ BOT = {'GIT_AUTHOR_NAME': 'github-actions[bot]',
        'GIT_COMMITTER_EMAIL': '41898282+github-actions[bot]@users.noreply.github.com'}
 
 
-def command(root, *args, env=None, binary=False):
+def command(root, *args, env=None, binary=False, input=None):
     return subprocess.run(args, cwd=root, env={**os.environ, **(env or {})},
-                          check=True, capture_output=True, text=not binary).stdout
+                          check=True, capture_output=True, text=not binary, input=input).stdout
 
 
 def git(root, *args, **kwargs):
@@ -167,12 +167,22 @@ def validate_payload(output):
     return files, actual
 
 
-def gh_json(root, endpoint, paginate=False):
+def gh_json(root, endpoint, paginate=False, payload=None, method=None):
     args = ['gh', 'api', endpoint]
     if paginate:
         args += ['--paginate', '--slurp']
-    value = json.loads(command(root, *args))
+    if payload is not None:
+        args += ['--method', method or 'POST', '--input', '-']
+    value = json.loads(command(root, *args, input=json.dumps(payload) if payload is not None else None))
     return [item for page in value for item in page] if paginate else value
+
+
+def delete_release(root, release):
+    repo = os.environ['GITHUB_REPOSITORY']
+    command(root, 'gh', 'api', f"repos/{repo}/releases/{release['id']}", '--method', 'DELETE')
+    ref = f"refs/tags/{release['tag_name']}"
+    if git(root, 'ls-remote', '--tags', 'origin', ref):
+        git(root, 'push', 'origin', ':' + ref)
 
 
 def retention_candidates(releases, latest, keep, now=None):
@@ -190,8 +200,9 @@ def retention_candidates(releases, latest, keep, now=None):
             continue
         if r['draft']:
             legacy = successful and SCHEMA_MARKER not in (r.get('body') or '')
+            superseded = successful and r['created_at'] < successful[0]['published_at']
             expired = now - datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) > timedelta(days=2)
-            if legacy or expired:
+            if legacy or superseded or expired:
                 result.append(r)
         elif successful and not r['prerelease']:
             result.append(r)
@@ -205,7 +216,7 @@ def cleanup(root, policy):
     published = [r for r in releases if not r['draft'] and not r['prerelease']]
     latest = gh_json(root, f'repos/{repo}/releases/latest')['tag_name'] if published else None
     for release in retention_candidates(releases, latest, policy['keep_releases']):
-        command(root, 'gh', 'release', 'delete', release['tag_name'], '--cleanup-tag', '--yes')
+        delete_release(root, release)
         print('Removed old release and tag:', release['tag_name'], flush=True)
 
 
@@ -220,14 +231,13 @@ def publish(root, output, policy):
     notes.write_text(f"{SCHEMA_MARKER}\nCode: {code_sha}\nSets: {len(manifest['sets'])}. "
                      f"Retained successful releases: {policy['keep_releases']}.\n"
                      'All formats and diagnostics are release assets. Source cache is on data.\n')
-    created = False
+    repo = os.environ['GITHUB_REPOSITORY']
+    release = None
     try:
-        command(root, 'gh', 'release', 'create', tag, '--target', code_sha, '--title',
-                'Routing ' + tag, '--notes-file', str(notes), '--draft')
-        created = True
+        release = gh_json(root, f'repos/{repo}/releases', payload={
+            'tag_name': tag, 'target_commitish': code_sha, 'name': 'Routing ' + tag,
+            'body': notes.read_text(), 'draft': True})
         command(root, 'gh', 'release', 'upload', tag, *(str(files[n]) for n in sorted(files)))
-        repo = os.environ['GITHUB_REPOSITORY']
-        release = gh_json(root, f'repos/{repo}/releases/tags/{tag}')
         expected = {n: 'sha256:' + h for n, h in digests.items()}
         for attempt in range(3):
             assets = gh_json(root, f"repos/{repo}/releases/{release['id']}/assets?per_page=100", paginate=True)
@@ -237,13 +247,14 @@ def publish(root, output, policy):
                 time.sleep(5)
         else:
             raise ValueError('Uploaded release asset hashes do not match the build')
-        command(root, 'gh', 'release', 'edit', tag, '--draft=false', '--latest')
+        gh_json(root, f"repos/{repo}/releases/{release['id']}", method='PATCH',
+                payload={'draft': False, 'make_latest': 'true'})
     except BaseException:
-        if created:
+        if release is not None:
             # Never remove a release if the final publish request succeeded but its response was lost.
-            release = gh_json(root, f"repos/{os.environ['GITHUB_REPOSITORY']}/releases/tags/{tag}")
-            if release['draft']:
-                command(root, 'gh', 'release', 'delete', tag, '--cleanup-tag', '--yes')
+            state = gh_json(root, f"repos/{repo}/releases/{release['id']}")
+            if state['draft']:
+                delete_release(root, state)
         raise
     print(f'Published {tag}: {len(files)} verified assets', flush=True)
 

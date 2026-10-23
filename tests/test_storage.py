@@ -1,17 +1,19 @@
 import gzip
 import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from build import load_source
 from storage import (BOT, SCHEMA_MARKER, clean_main, command, git, publish_cache,
-                     retention_candidates, restore_cache, unpack_cache, validate_payload)
+                     publish, retention_candidates, restore_cache, unpack_cache, validate_payload)
 
 
 class StorageTests(unittest.TestCase):
@@ -84,6 +86,17 @@ class StorageTests(unittest.TestCase):
             clean_main(self.root)
         self.assertEqual(git(self.origin, 'rev-list', '--count', 'main'), '2')
 
+    def test_normal_code_history_is_preserved_after_migration(self):
+        code = clean_main(self.root)
+        git(self.root, 'reset', '--hard', code)
+        (self.root / 'README.md').write_text('Updated code documentation')
+        git(self.root, 'add', 'README.md')
+        git(self.root, 'commit', '-m', 'Normal code change', env=BOT)
+        git(self.root, 'push', 'origin', 'main')
+        updated = git(self.root, 'rev-parse', 'HEAD')
+        self.assertEqual(clean_main(self.root), updated)
+        self.assertEqual(git(self.origin, 'rev-list', '--count', 'main'), '2')
+
     def test_corrupt_cache_cannot_overwrite_working_snapshot(self):
         original = (self.cache / 'example.json').read_bytes()
         with self.assertRaises((ValueError, OSError, EOFError)):
@@ -102,6 +115,45 @@ class StorageTests(unittest.TestCase):
         (dist / 'example.lst').write_bytes(b'tampered.com\n')
         with self.assertRaises(ValueError):
             validate_payload(self.output)
+
+    def check_draft_publication(self, corrupt=False):
+        dist = self.output / 'dist'
+        dist.mkdir()
+        (dist / 'example.lst').write_bytes(b'example.com\n')
+        digest = hashlib.sha256((dist / 'example.lst').read_bytes()).hexdigest()
+        (dist / 'sha256sums.txt').write_text(digest + '  example.lst\n')
+        _, digests = validate_payload(self.output)
+        requests = []
+        draft = {'id': 42, 'tag_name': 'draft', 'draft': True}
+        def api(root, endpoint, **kwargs):
+            requests.append((endpoint, kwargs))
+            if endpoint == 'repos/owner/project/releases':
+                return draft
+            if endpoint.endswith('/42/assets?per_page=100'):
+                return [{'name': n, 'digest': 'sha256:' + ('bad' if corrupt else h)}
+                        for n, h in digests.items()]
+            if endpoint.endswith('/42'):
+                return draft
+            raise AssertionError('Draft lookup by tag is unavailable: ' + endpoint)
+        with patch.dict(os.environ, {'GITHUB_REPOSITORY': 'owner/project', 'GITHUB_RUN_ID': '123'}), \
+                patch('storage.clean_main', return_value='code'), patch('storage.publish_cache'), \
+                patch('storage.command', return_value=''), patch('storage.gh_json', side_effect=api), \
+                patch('storage.delete_release') as delete, patch('storage.time.sleep'):
+            if corrupt:
+                with self.assertRaises(ValueError):
+                    publish(self.root, self.output, self.policy)
+                delete.assert_called_once_with(self.root, draft)
+                self.assertFalse(any(k.get('method') == 'PATCH' for _, k in requests))
+            else:
+                publish(self.root, self.output, self.policy)
+                delete.assert_not_called()
+                self.assertEqual(requests[-1][1]['payload'], {'draft': False, 'make_latest': 'true'})
+
+    def test_draft_is_verified_by_id_before_publishing(self):
+        self.check_draft_publication()
+
+    def test_bad_uploaded_digest_deletes_only_draft_and_keeps_latest(self):
+        self.check_draft_publication(corrupt=True)
 
 
 class RetentionTests(unittest.TestCase):
