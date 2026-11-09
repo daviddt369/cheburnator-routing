@@ -53,6 +53,11 @@ jobs:
           python-version: '3.12'
       - name: Restore compressed source snapshots
         run: python scripts/storage.py restore
+      - name: Cache verified compiler archives
+        uses: actions/cache@v4
+        with:
+          path: tools/.downloads
+          key: compilers-${{ hashFiles('scripts/install_tools.py') }}
       - name: Install verified compilers
         run: python scripts/install_tools.py
       - name: Build all formats and verify round trips
